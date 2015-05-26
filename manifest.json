@@ -1,0 +1,12 @@
+{
+  "name": "DSS Recorder",
+  "version": "0.0.1",
+  "description": "Record interactions for your UI components",
+  "devtools_page": "es6-repl.html",
+  "manifest_version": 2,
+  "icons": {
+  },
+  "permissions": [
+    "tabs"
+  ]
+}
