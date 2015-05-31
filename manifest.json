@@ -4,6 +4,9 @@
   "description": "Record interactions for your UI components",
   "manifest_version": 2,
   "icons": {
+    "128": "images/ico-128.png",
+    "48": "images/ico-48.png",
+    "16": "images/ico-16.png"
   },
   "browser_action": {
     "default_title": "Record an interaction",
