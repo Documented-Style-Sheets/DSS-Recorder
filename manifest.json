@@ -6,7 +6,18 @@
   "manifest_version": 2,
   "icons": {
   },
+  "browser_action": {
+    "default_title": "Record an interaction",
+    "default_icon": {
+      "19": "images/ico-19.png",
+      "38": "images/ico-38.png"
+    }
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
   "permissions": [
-    "tabs"
+    "activeTab"
   ]
 }
