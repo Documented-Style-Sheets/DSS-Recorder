@@ -1,0 +1,25 @@
+{
+  "name": "DSS-Recorder",
+  "version": "0.0.1",
+  "description": "Record interactions for your UI components",
+  "main": "background.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DSSWG/DSS-Recording-Chrome-Extension.git"
+  },
+  "author": "DSS Working Group - https://github.com/DSSWG",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DSSWG/DSS-Recording-Chrome-Extension/issues"
+  },
+  "homepage": "https://github.com/DSSWG/DSS-Recording-Chrome-Extension",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-browserify": "^0.5.1",
+    "gulp-callback": "0.0.3",
+    "gulp-concat": "^2.5.2",
+    "socket.io": "^1.3.5",
+    "socket.io-client": "^1.3.5"
+  }
+}
