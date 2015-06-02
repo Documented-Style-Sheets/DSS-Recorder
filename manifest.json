@@ -1,0 +1,28 @@
+{
+  "name": "DSS Recorder",
+  "version": "0.0.1",
+  "description": "Record interactions for your UI components",
+  "manifest_version": 2,
+  "icons": {
+    "128": "images/ico-128.png",
+    "48": "images/ico-48.png",
+    "16": "images/ico-16.png"
+  },
+  "browser_action": {
+    "default_title": "Record an interaction",
+    "default_icon": {
+      "19": "images/ico-19.png",
+      "38": "images/ico-38.png"
+    }
+  },
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["content.js"]
+  }],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": [
+    "activeTab"
+  ]
+}
