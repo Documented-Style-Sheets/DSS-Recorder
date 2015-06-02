@@ -12237,6 +12237,7 @@
 var DSS = DSS || {};
 
 DSS.EVENTS = ['click', 'mouseover', 'mouseout', 'mousemove', 'scroll'];
+DSS.THROTTLE_LIMIT = 300;
 
 DSS.record = function record() {
   DSS.EVENTS.forEach(function(evt) {
@@ -12250,9 +12251,13 @@ DSS.stop = function stop() {
   });
 }
 
-DSS.eventHandler = function(e) {
-  console.log(e.type);
-}
+DSS.eventHandler = _.throttle(function(e) {
+  var computed = window.getComputedStyle(e.target);
+  var styles = _.omit(computed, function(v, k) {
+    return !isNaN(parseInt(k));
+  });
+  console.log(styles);
+}, DSS.THROTTLE_LIMIT);
 
 chrome.runtime.onMessage.addListener(function(message, sender, response) {
   switch(message.data) {
