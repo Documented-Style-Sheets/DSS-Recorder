@@ -17,7 +17,7 @@ gulp.task('dev', function() {
       }));
   }
 
-  gulp.watch('src/*.js', copyBackgroundScript);
+  gulp.watch(['src/*.js'], copyBackgroundScript);
   copyBackgroundScript();
 });
 
