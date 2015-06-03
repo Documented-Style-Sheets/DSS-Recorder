@@ -5,8 +5,7 @@ function DSSEvent(params) {
   this.type = params.type;
   this.time = params.time;
   this.styles = this.omitExtraneousKeys(params.styles)
-
-  console.log(this.time);
+  this.el = params.el;
 }
 
 proto.omitExtraneousKeys = function(obj) {

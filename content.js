@@ -12245,8 +12245,7 @@ function DSSEvent(params) {
   this.type = params.type;
   this.time = params.time;
   this.styles = this.omitExtraneousKeys(params.styles)
-
-  console.log(this.time);
+  this.el = params.el;
 }
 
 proto.omitExtraneousKeys = function(obj) {
@@ -12259,16 +12258,45 @@ DSSEvent.prototype = proto;
 module.exports = DSSEvent;
 
 },{"lodash":1}],3:[function(require,module,exports){
+var _     = require('lodash');
+var proto = {};
+
+function DSSEventCollection() {
+}
+
+proto.dssEvents = [];
+
+proto.push = function(dssEvent) {
+  this.dssEvents.push(dssEvent);
+}
+
+proto.fetchByElement = function(el) {
+  return _.filter(this.dssEvents, function(dssEvent) {
+    return dssEvent.el === el;
+  });
+}
+
+proto.fetchUniqueElements = function() {
+  return _.chain(this.dssEvents).uniq(function(dssEvent) {
+    return dssEvent.el;
+  }).pluck('el').value();
+}
+
+DSSEventCollection.prototype = proto;
+module.exports = DSSEventCollection;
+
+},{"lodash":1}],4:[function(require,module,exports){
 var _        = require('lodash');
-var DSSEvent = require('./dss_event.js');
 var DSS      = DSS || {};
+var DSSEvent = require('./dss_event.js');
+var DSSEventCollection = require('./dss_event_collection.js');
 
 /* --------------------- Constants --------------------- */
 DSS.WATCH_EVENTS = ['click', 'mouseover', 'mouseout', 'mousemove', 'scroll'];
 DSS.THROTTLE_LIMIT = 300;
 
 /* --------------------- Variables --------------------- */
-DSS.eventCollection = [];
+DSS.eventCollection = new DSSEventCollection();
 DSS.startTime;
 
 /* --------------------- Methods --------------------- */
@@ -12286,12 +12314,13 @@ DSS.stop = function stop() {
   });
 }
 
-DSS.eventHandler = _.throttle(function(e) {
+DSS.eventHandler = _.throttle(function eventHandler(e) {
   var computed = window.getComputedStyle(e.target);
   var dssEvent = new DSSEvent({
     type: e.type,
     time: Date.now() - DSS.startTime,
-    styles: computed
+    styles: computed,
+    el: e.target
   });
   DSS.eventCollection.push(dssEvent);
 }, DSS.THROTTLE_LIMIT);
@@ -12312,4 +12341,4 @@ chrome.runtime.onMessage.addListener(function(message, sender, response) {
   }
 });
 
-},{"./dss_event.js":2,"lodash":1}]},{},[3]);
+},{"./dss_event.js":2,"./dss_event_collection.js":3,"lodash":1}]},{},[4]);

@@ -1,13 +1,14 @@
 var _        = require('lodash');
-var DSSEvent = require('./dss_event.js');
 var DSS      = DSS || {};
+var DSSEvent = require('./dss_event.js');
+var DSSEventCollection = require('./dss_event_collection.js');
 
 /* --------------------- Constants --------------------- */
 DSS.WATCH_EVENTS = ['click', 'mouseover', 'mouseout', 'mousemove', 'scroll'];
 DSS.THROTTLE_LIMIT = 300;
 
 /* --------------------- Variables --------------------- */
-DSS.eventCollection = [];
+DSS.eventCollection = new DSSEventCollection();
 DSS.startTime;
 
 /* --------------------- Methods --------------------- */
@@ -25,12 +26,13 @@ DSS.stop = function stop() {
   });
 }
 
-DSS.eventHandler = _.throttle(function(e) {
+DSS.eventHandler = _.throttle(function eventHandler(e) {
   var computed = window.getComputedStyle(e.target);
   var dssEvent = new DSSEvent({
     type: e.type,
     time: Date.now() - DSS.startTime,
-    styles: computed
+    styles: computed,
+    el: e.target
   });
   DSS.eventCollection.push(dssEvent);
 }, DSS.THROTTLE_LIMIT);
