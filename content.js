@@ -1,3 +1,5 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function (global){
 /**
  * @license
  * lodash 3.9.3 (Custom Build) <https://lodash.com/>
@@ -12234,31 +12236,69 @@
   }
 }.call(this));
 
-var DSS = DSS || {};
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],2:[function(require,module,exports){
+var _     = require('lodash');
+var proto = {}; // Our soon-to-be prototype shorthand
 
-DSS.EVENTS = ['click', 'mouseover', 'mouseout', 'mousemove', 'scroll'];
+function DSSEvent(params) {
+  this.type = params.type;
+  this.time = params.time;
+  this.styles = this.omitExtraneousKeys(params.styles)
+
+  console.log(this.time);
+}
+
+proto.omitExtraneousKeys = function(obj) {
+  return _.omit(obj, function(v, k) {
+    return !isNaN(parseInt(k));
+  })
+}
+
+DSSEvent.prototype = proto;
+module.exports = DSSEvent;
+
+},{"lodash":1}],3:[function(require,module,exports){
+var _        = require('lodash');
+var DSSEvent = require('./dss_event.js');
+var DSS      = DSS || {};
+
+/* --------------------- Constants --------------------- */
+DSS.WATCH_EVENTS = ['click', 'mouseover', 'mouseout', 'mousemove', 'scroll'];
 DSS.THROTTLE_LIMIT = 300;
 
+/* --------------------- Variables --------------------- */
+DSS.eventCollection = [];
+DSS.startTime;
+
+/* --------------------- Methods --------------------- */
 DSS.record = function record() {
-  DSS.EVENTS.forEach(function(evt) {
+  DSS.WATCH_EVENTS.forEach(function(evt) {
     document.addEventListener(evt, DSS.eventHandler);
   });
+
+  DSS.startTime = Date.now();
 }
 
 DSS.stop = function stop() {
-  DSS.EVENTS.forEach(function(evt) {
+  DSS.WATCH_EVENTS.forEach(function(evt) {
     document.removeEventListener(evt, DSS.eventHandler);
   });
 }
 
 DSS.eventHandler = _.throttle(function(e) {
   var computed = window.getComputedStyle(e.target);
-  var styles = _.omit(computed, function(v, k) {
-    return !isNaN(parseInt(k));
+  var dssEvent = new DSSEvent({
+    type: e.type,
+    time: Date.now() - DSS.startTime,
+    styles: computed
   });
-  console.log(styles);
+  DSS.eventCollection.push(dssEvent);
 }, DSS.THROTTLE_LIMIT);
 
+/* -----------------------------------------------------
+ * Handle messages from the background script
+ * -----------------------------------------------------*/
 chrome.runtime.onMessage.addListener(function(message, sender, response) {
   switch(message.data) {
     case 'recording:start':
@@ -12271,3 +12311,5 @@ chrome.runtime.onMessage.addListener(function(message, sender, response) {
       break;
   }
 });
+
+},{"./dss_event.js":2,"lodash":1}]},{},[3]);
