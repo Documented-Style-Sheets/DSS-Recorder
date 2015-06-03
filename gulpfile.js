@@ -1,7 +1,8 @@
 var gulp       = require('gulp'),
     concat     = require('gulp-concat'),
     io         = require('socket.io')(35729),
-    browserify = require('gulp-browserify'),
+    browserify = require('browserify'),
+    source     = require('vinyl-source-stream'),
     gcb        = require('gulp-callback');
 
 gulp.task('dev', function() {
@@ -12,16 +13,15 @@ gulp.task('dev', function() {
   }
 
   var copyBackgroundScript = function() {
-    gulp.src(['src/background-dev.js', 'src/background.js'])
-      .pipe(concat('background.js'))
-      .pipe(browserify())
+    return browserify(['src/background-dev.js', 'src/background.js']).bundle()
+      .pipe(source('background.js'))
       .pipe(gulp.dest('./'))
       .pipe(gcb(reload));
   }
 
   var copyContentScript = function() {
-    gulp.src(['node_modules/lodash/index.js', 'src/content.js'])
-      .pipe(concat('content.js'))
+    return browserify(['src/content.js']).bundle()
+      .pipe(source('content.js'))
       .pipe(gulp.dest('./'))
       .pipe(gcb(reload));
   }
