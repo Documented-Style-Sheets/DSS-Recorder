@@ -1,6 +1,7 @@
-var _        = require('lodash');
-var DSS      = DSS || {};
-var DSSEvent = require('./dss_event.js');
+var _         = require('lodash');
+var DSS       = DSS || {};
+var DSSEvent  = require('./dss_event.js');
+var DSSPlayer = require('./dss_player.js');
 var DSSEventCollection = require('./dss_event_collection.js');
 
 /* --------------------- Constants --------------------- */
