@@ -4,7 +4,7 @@ var DSSEvent = require('./dss_event.js');
 var DSSEventCollection = require('./dss_event_collection.js');
 
 /* --------------------- Constants --------------------- */
-DSS.WATCH_EVENTS = ['click', 'mouseover', 'mouseout', 'mousemove', 'scroll'];
+DSS.WATCH_EVENTS = ['click', 'mouseover', 'mouseout', 'mousemove', 'scroll', 'transitionend'];
 DSS.THROTTLE_LIMIT = 300;
 
 /* --------------------- Variables --------------------- */

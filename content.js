@@ -12242,24 +12242,32 @@ var _     = require('lodash');
 var proto = {}; // Our soon-to-be prototype shorthand
 
 function DSSEvent(params) {
-  this.type = params.type;
-  this.time = params.time;
-  this.styles = this.omitExtraneousKeys(params.styles)
   this.el = params.el;
+  this.type = params.type || '';
+  this.time = params.time || 0;
+  this.styles = this.omitExtraneousKeys(params.styles || window.getComputedStyle(params.el));
+  this.delta;
 }
 
 proto.omitExtraneousKeys = function(obj) {
   return _.omit(obj, function(v, k) {
-    return !isNaN(parseInt(k));
+    return !isNaN(parseInt(k)) || k === 'cssText';
   })
+}
+
+proto.calcStyleDelta = function(prevStyles) {
+  return _.omit(this.styles, function(v, k) {
+    return prevStyles[k] === v;
+  });
 }
 
 DSSEvent.prototype = proto;
 module.exports = DSSEvent;
 
 },{"lodash":1}],3:[function(require,module,exports){
-var _     = require('lodash');
-var proto = {};
+var _        = require('lodash');
+var DSSEvent = require('./dss_event.js');
+var proto    = {};
 
 function DSSEventCollection() {
 }
@@ -12276,23 +12284,63 @@ proto.fetchByElement = function(el) {
   });
 }
 
+proto.fetchByTime = function() {
+  return _.sortBy(this.dssEvents, 'time');
+}
+
 proto.fetchUniqueElements = function() {
   return _.chain(this.dssEvents).uniq(function(dssEvent) {
     return dssEvent.el;
   }).pluck('el').value();
 }
 
+proto.createElementGroupings = function() {
+  var els = this.fetchUniqueElements();
+  return els.map(function(el, i) {
+    return {
+      el: el,
+      events: this.fetchByElement(el)
+    };
+  }, this);
+}
+
+proto.groupedByElement = function() {
+  var groupings = this.createElementGroupings();
+  // Prepend an empty event with the default styles
+  // to calculate the delta from index 0..1
+  return groupings.map(function(group) {
+    group.events.unshift(new DSSEvent({el: group.el}));
+    return group;
+  })
+}
+
+proto.calculateDeltas = function() {
+  this.groupedByElement().forEach(function(group) {
+    group.events.forEach(function(dssEvent, i) {
+      if(i === 0) return;
+      dssEvent.delta = dssEvent.calcStyleDelta(group.events[i-1].styles);
+    });
+  });
+}
+
+proto.fetchDeltas = function() {
+  this.calculateDeltas();
+  return _.filter(this.fetchByTime(), function(evt) {
+    return _.keys(evt.delta).length;
+  });
+}
+
 DSSEventCollection.prototype = proto;
 module.exports = DSSEventCollection;
 
-},{"lodash":1}],4:[function(require,module,exports){
+},{"./dss_event.js":2,"lodash":1}],4:[function(require,module,exports){
 var _        = require('lodash');
 var DSS      = DSS || {};
 var DSSEvent = require('./dss_event.js');
 var DSSEventCollection = require('./dss_event_collection.js');
 
 /* --------------------- Constants --------------------- */
-DSS.WATCH_EVENTS = ['click', 'mouseover', 'mouseout', 'mousemove', 'scroll'];
+DSS.WATCH_EVENTS = ['click', 'mouseover', 'mouseout', 'mousemove', 'scroll', 'transitionend'];
 DSS.THROTTLE_LIMIT = 300;
 
 /* --------------------- Variables --------------------- */
